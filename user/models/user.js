@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     
   },
+ 
   created_at: {
     type: Date,
     default: Date.now
@@ -59,19 +60,16 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-var ID = function () {
-  return Math.random().toString(36).substring(2, 9);
-};
 
-userSchema.pre('save', async function save(next) {
-  this.increment();
-  if(!this.username){
-    this.username = ID()
-  }
-  this.updated_at = new Date;
-  return next();
-});
+// userSchema.pre('save', async function save(next) {
+//   this.increment();
+//   if(!this.username){
+//     this.username = ID()
+//   }
+//   this.updated_at = new Date;
+//   return next();
+// });
 
-userSchema.index({location:"2dsphere"});
+//userSchema.index({location:"2dsphere"});
 
 module.exports = mongoose.model('Users', userSchema)

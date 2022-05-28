@@ -1,6 +1,6 @@
 require('dotenv').config();
 require('./services/redis_db');
-
+const { validateLocation } = require('./routes/v1/middlewares/location')
 process.env.TZ = 'Asia/Calcutta'
 const express = require('express');
 const mongoose = require("mongoose");
@@ -13,8 +13,11 @@ app.use(express.json());
 app.set('trust proxy', 1);
 const {mongo_init} = require("./services/mongo_db")
 
-const authentiction = require('./routes/v1/authentication');
-app.use('/v1/auth', authentiction);
+const auth = require('./routes/v1/auth');
+app.use('/v1/auth', auth);
+
+const profile = require('./routes/v1/profile');
+app.use('/v1/profile', profile);
 
 mongo_init(mongoose).then(()=> {
   mongoose.mongo_init = mongo_init;
