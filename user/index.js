@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('./services/redis_db');
+const {verifyAccessToken} = require("./routes/v1/middlewares/token");
 const { validateLocation } = require('./routes/v1/middlewares/location')
 process.env.TZ = 'Asia/Calcutta'
 const express = require('express');
@@ -17,7 +18,7 @@ const auth = require('./routes/v1/auth');
 app.use('/v1/auth', auth);
 
 const profile = require('./routes/v1/profile');
-app.use('/v1/profile', profile);
+app.use('/v1/profile',verifyAccessToken, profile);
 
 mongo_init(mongoose).then(()=> {
   mongoose.mongo_init = mongo_init;

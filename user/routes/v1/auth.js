@@ -19,19 +19,28 @@ router.get("/", verifyAccessToken,(req,res) => {
 })
 
 router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
-    
+    let limit = await redis.get(`${req.body.phone}-limit`);
+
+    if(limit > 3) {
+        res.status(403).json({code: 429,message: resp[429]})
+        return
+    }
     let user1 = await user.find({"phone": req.body.phone});
+    
+
+
     if(user1.length == 0)
     {
+
         let test_user = new user()
         test_user.phone = req.body.phone
         test_user.save()
         .then(data => {
            // const otp = otpGenerator.generate(4, { digits:true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
             const otp =  generateOTP(4);
-
+            
             redis.set(`${data.phone}-${otp}`,otp,'ex',180);
-        
+            
             res.status(201).json({code: 200,message: "OTP Generated Successfully", result: {otp: otp}})
         })
         .catch(err => {
@@ -44,6 +53,8 @@ router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
         
         res.status(201).json({code: 200,message: "OTP Generated Successfully", result: {otp: otp}})
     }
+
+    redis.set(`${req.body.phone}-limit`,limit+1,'ex',300);
 })
 
 router.post("/verify-user",validateRequestOTP,(req,res) =>  {
