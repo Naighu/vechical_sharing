@@ -5,6 +5,7 @@ const mongoose = require('../../services/mongo_db');
 const redis = require('../../services/redis_db');
 const user = require('../../models/user');
 const {generateOTP} = require('../../helper/otp_generator')
+const {createUser} = require('../../helper/create_user')
 const resp = require('./data/response')
 
 const { validateRequestOTP } = require('./middlewares/validator');
@@ -31,16 +32,7 @@ router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
 
     if(user1 == null)
     {
-
-        user1 = new user()
-    
-        user1.phone = req.body.phone
-       // user1.device = {};
-        for(let [key,value ] of Object.entries(req.body.device)) {
-            user1.device[key] = value;
-        }
-
-        user1.save()
+        createUser(req)
         .then(data => {
            // const otp = otpGenerator.generate(4, { digits:true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
             const otp =  generateOTP(4);
@@ -54,13 +46,11 @@ router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
             res.status(200).json({code: 500,message: resp[500]})
         })
     }else{
-      //  user1.device = {};
  
         for(let [key,value ] of Object.entries(req.body.device)) {
-
             user1.device[key] = value;
         }
-        user1.save().then(data => {
+        user1.then(_ => {
             const otp =  generateOTP(4);
             redis.set(`${req.body.phone}-${otp}`,otp,'ex',180);
             

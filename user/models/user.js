@@ -55,7 +55,7 @@ stat: statSchema,
   type:String,
  },
  pincode: {
-  type:Number,
+  type:String,
   minlength: 6,
   maxlength:6
  },
@@ -73,6 +73,11 @@ stat: statSchema,
  profile_image: {
     type: String,
     
+  },
+
+  wallet: { 
+    type:ObjectId,
+    ref: 'Wallet'
   },
  
   created_at: {

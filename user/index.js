@@ -20,6 +20,9 @@ app.use('/v1/auth', auth);
 const profile = require('./routes/v1/profile');
 app.use('/v1/profile',verifyAccessToken, profile);
 
+const wallet = require('./routes/v1/wallet');
+app.use('/v1/wallet',verifyAccessToken, wallet);
+
 mongo_init(mongoose).then(()=> {
   mongoose.mongo_init = mongo_init;
   const server = app.listen(

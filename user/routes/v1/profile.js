@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const user = require('../../models/user');
 const resp = require('./data/response')
 const { validateProfileUpdate } = require('./middlewares/validator');
 

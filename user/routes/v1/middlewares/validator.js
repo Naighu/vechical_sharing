@@ -58,4 +58,35 @@ function validateProfileUpdate(req, res, next) {
         next();
     }
 }
-module.exports = { validateProfileUpdate,validateRequestOTP }
+
+const schemaWalletValidate = {
+    type: "object",
+    properties: {
+      amount: { type: "number"},
+      transaction_type: {
+        enum:["withdraw","deposit"]
+      }, 
+    },
+    required: ["amount", "transaction_type"],
+    additionalProperties: false
+  }
+  
+  const walletValidate = ajv.compile(schemaWalletValidate)
+
+function validateWalletUpdate(req, res, next) {
+    const valid = walletValidate(req.body)
+    if (!valid) {
+        return res.status(200).json({ "code": 400, "message": walletValidate.errors[0].message})
+    } else {
+       if(req.body.amount <= 0)
+       {
+           return res.status(200).json({ "code": 400, "message": "Amount should be greater than 0"})
+       }
+       
+      
+        next();
+    }
+}
+
+
+module.exports = { validateProfileUpdate,validateRequestOTP,validateWalletUpdate }
