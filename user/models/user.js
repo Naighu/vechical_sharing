@@ -3,6 +3,19 @@ const validator = require('validator');
 
 const { ObjectId } = mongoose.Schema.Types;
 
+
+const statSchema = new mongoose.Schema({
+  score: {
+    type:Number,
+    default: 0
+  },
+  rating: {
+    type: Number,
+    default: 0
+  }
+})
+
+
 const userSchema = new mongoose.Schema({
 
   phone: {
@@ -24,6 +37,20 @@ const userSchema = new mongoose.Schema({
     },
     trim: true
   },
+  device: {
+   
+    platform: {
+      type: String,
+      enum: ['web','android','ios'],
+      lowercase: true,
+      
+    },
+    
+    fcm: String,
+    app_version: String,
+   
+  },
+stat: statSchema,
  address: {
   type:String,
  },
@@ -37,9 +64,6 @@ const userSchema = new mongoose.Schema({
    type:Boolean,
    default:false
  },
-
-
- 
   gender: {
     type: String,
     enum: ['male','female','others'],
@@ -58,6 +82,8 @@ const userSchema = new mongoose.Schema({
   updated_at: {
     type: Date
   }
+
+  
 })
 
 

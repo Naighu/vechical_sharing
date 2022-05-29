@@ -8,9 +8,18 @@ const schemaRequestOTP = {
     type:"object",
     properties: {
         phone: { type: "string", maxLength: 10, minLength: 10 },
+        device: {
+            type: "object", 
+            properties: {
+                platform: { enum: ['web','android','ios'] },
+                fcm: {type: "string"},
+                app_version: {type: "string"}
+            } ,
+            required: ["platform", "fcm","app_version"],
+        }
     
     },
-    required: ["phone"]
+    required: ["phone","device"]
 }
 const requestOTP = ajv.compile(schemaRequestOTP)
 

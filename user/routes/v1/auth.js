@@ -25,16 +25,22 @@ router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
         res.status(403).json({code: 429,message: resp[429]})
         return
     }
-    let user1 = await user.find({"phone": req.body.phone});
+    let user1 = await user.findOne({"phone": req.body.phone});
+    
     
 
-
-    if(user1.length == 0)
+    if(user1 == null)
     {
 
-        let test_user = new user()
-        test_user.phone = req.body.phone
-        test_user.save()
+        user1 = new user()
+    
+        user1.phone = req.body.phone
+       // user1.device = {};
+        for(let [key,value ] of Object.entries(req.body.device)) {
+            user1.device[key] = value;
+        }
+
+        user1.save()
         .then(data => {
            // const otp = otpGenerator.generate(4, { digits:true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
             const otp =  generateOTP(4);
@@ -48,20 +54,36 @@ router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
             res.status(200).json({code: 500,message: resp[500]})
         })
     }else{
-        const otp =  generateOTP(4);
-        redis.set(`${req.body.phone}-${otp}`,otp,'ex',180);
+      //  user1.device = {};
+ 
+        for(let [key,value ] of Object.entries(req.body.device)) {
+
+            user1.device[key] = value;
+        }
+        user1.save().then(data => {
+            const otp =  generateOTP(4);
+            redis.set(`${req.body.phone}-${otp}`,otp,'ex',180);
+            
+            res.status(201).json({code: 200,message: "OTP Generated Successfully", result: {otp: otp}})
+            redis.set(`${req.body.phone}-limit`,limit+1,'ex',300);
+        }).catch(err => {
+            res.status(200).json({code: 500,message:resp[500]})
+        })
         
-        res.status(201).json({code: 200,message: "OTP Generated Successfully", result: {otp: otp}})
     }
 
-    redis.set(`${req.body.phone}-limit`,limit+1,'ex',300);
+    
 })
 
-router.post("/verify-user",validateRequestOTP,(req,res) =>  {
-    if(req.body.otp == null){
+router.post("/verify-user",(req,res) =>  {
+    if(req.body.phone == null){
+        res.status(200).json({code: 200,message: "phone field required"});
+        return
+    }else if(req.body.otp == null){
         res.status(200).json({code: 200,message: "OTP field required"});
         return
     }
+    
     redis.get(`${req.body.phone}-${req.body.otp}`,function(err,val) {
         
          if(err == null && req.body.otp === val){
@@ -69,6 +91,7 @@ router.post("/verify-user",validateRequestOTP,(req,res) =>  {
           
             redis.set(req.body.phone,access_token,'ex',86400).then(_ => {
                 user.findOne({"phone": req.body.phone}).then(user1 => {
+
                     res.status(201).json({code:200,message:"OTP verified successfully",result: {access_token: access_token,user: user1}});
                  }).catch(err => {
                     res.status(200).json({code:500,message: resp[500]});
