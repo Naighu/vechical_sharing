@@ -1,12 +1,12 @@
 {
-  "name": "inidian_app_user_service",
-  "version": "1.1.0",
-  "description": "User service for the Indian App",
+  "name": "vehicle_share",
+  "version": "1.0.0",
+  "description": "Vehicle Share api",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js"
   },
-  "author": "Naigal Roy,Pranav V",
+  "author": "Naigal Roy",
   "license": "ISC",
   "dependencies": {
     "ajv": "^8.11.0",

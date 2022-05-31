@@ -50,7 +50,7 @@ router.post("/generate-otp",validateRequestOTP, async (req,res)  => {
         for(let [key,value ] of Object.entries(req.body.device)) {
             user1.device[key] = value;
         }
-        user1.then(_ => {
+        user1.save().then(_ => {
             const otp =  generateOTP(4);
             redis.set(`${req.body.phone}-${otp}`,otp,'ex',180);
             
