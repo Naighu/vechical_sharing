@@ -32,9 +32,7 @@ const journeySchema = new mongoose.Schema({
     },
     vechicle:vechicleSchema,
     sections: {
-        type: Array,
-        lowercase: true,
-        
+        type: Map,
     },
     created_at: {
         type: Date,

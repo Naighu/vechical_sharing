@@ -34,7 +34,7 @@ router.post("/add-route",validateJourney,(req,res) => {
         }
 
         journey.userid = req.user._id;
-        journey.sections = sections["sections"];
+        journey.sections = sections;
         journey.save().then(data => {
             res.status(201).json({code: 200,message: "Data inserted",result: {joureny_id: data._id.toString()}});
         }).catch(err => {

@@ -2,7 +2,7 @@ const Ajv = require("ajv")
 const addFormats = require("ajv-formats")
 const ajv = new Ajv({verbose: true})
 const resp = require('../data/response')
-const user = require('../../../models/user');
+const Journey = require('../../../models/journey')
 addFormats(ajv)
 
 const schemaJourney = {
@@ -61,13 +61,14 @@ function validateJourney(req, res, next) {
         }
         datetime.setMinutes(datetime.getMinutes() + 60)
         
-        console.log(datetime - startDate);
+        
         if(datetime - startDate < 0 ){
             return res.status(200).json({"code": 400,"message": "Journey can be set with in 1 hour"})
         }
         
         //Driver cannot set morethan 2 journey
-        user.find({user_id : req.user._id}).then(data => {
+        Journey.findOne({user_id : req.user._id}).then(data => {
+            
             if(data == null){
                 next();
             }else{
