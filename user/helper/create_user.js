@@ -1,5 +1,5 @@
 const user = require('../models/user');
-const wallet = require('../models/wallet');
+const wallets = require('../models/wallet');
 
 const  createUser = function(req)  {
     let user1 = new user();
@@ -13,7 +13,7 @@ const  createUser = function(req)  {
         user1.device[key] = value;
     }
     return new Promise((resolve,reject) => {
-       new wallet().save().then(new_wallet => {
+       new wallets().save().then(new_wallet => {
             user1.wallet = new_wallet._id;
             user1.save().then(new_user => {
                 resolve(new_user)
