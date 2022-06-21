@@ -3,6 +3,7 @@ const router = express.Router();
 const resp = require('./data/response')
 const vehicles = require('../../models/vehicles')
 const { validateProfileUpdate,validateVehicleUpdate } = require('./middlewares/validator');
+const { findById } = require('../../models/vehicles');
 
 
 
@@ -47,9 +48,15 @@ router.post("/vehicle-details",validateVehicleUpdate, (req,res) =>{
      })
 })
 
-// router.get("/vehicle-details", (req,res) => {
-//     res.status(201).json({code:200, message:"Vehicles Fetched Successfully",result:"BMW"})
-// })
+ router.get("/vehicle-details", async (req,res) => {
+        veh_id = req.user.vehicle_ids
+        const veh = []
+        for( let id=0; id < veh_id.length; id++){
+            veh[id] = await vehicles.findById(veh_id[id])
+            //allveh[id].push(veh)
+        }
+        res.status(201).json({code:200, message:"Vehicles Fetched Successfully",result: veh})
+ })
 
 
 module.exports = router
